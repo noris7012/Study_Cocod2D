@@ -22,34 +22,23 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by game.RC
+//
 
-#include "cocos2d.h"
+#define IDS_PROJNAME                100
+#define IDR_TESTJS    100
 
-class HelloWorld : public cocos2d::Scene
-{
-public:
-    static cocos2d::Scene* createScene();
+#define ID_FILE_NEW_WINDOW            32771
 
-    virtual bool init();
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
-
-	void doPushScene(Ref* pSender);
-	void doReplaceScene(Ref* pSender);
-
-	void doPushSceneTran(Ref* pSender);
-	void doReplaceSceneTran(Ref* pSender);
-	cocos2d::TransitionScene* createTransition(int nIdex, float t, cocos2d::Scene* s);
-
-	void doChangeScene(Ref* pSender);
-	void onEnter() override;
-	void onEnterTransitionDidFinish() override;
-	void onExitTransitionDidStart() override;
-	void onExit() override;
-	~HelloWorld(void);
-};
-
-#endif // __HELLOWORLD_SCENE_H__
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE    201
+#define _APS_NEXT_CONTROL_VALUE        1000
+#define _APS_NEXT_SYMED_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE        32775
+#endif
+#endif

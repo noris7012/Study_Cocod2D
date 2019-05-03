@@ -36,20 +36,6 @@ public:
     
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
-
-	void doPushScene(Ref* pSender);
-	void doReplaceScene(Ref* pSender);
-
-	void doPushSceneTran(Ref* pSender);
-	void doReplaceSceneTran(Ref* pSender);
-	cocos2d::TransitionScene* createTransition(int nIdex, float t, cocos2d::Scene* s);
-
-	void doChangeScene(Ref* pSender);
-	void onEnter() override;
-	void onEnterTransitionDidFinish() override;
-	void onExitTransitionDidStart() override;
-	void onExit() override;
-	~HelloWorld(void);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

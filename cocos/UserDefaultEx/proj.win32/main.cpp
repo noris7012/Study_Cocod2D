@@ -22,34 +22,21 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
-
+#include "main.h"
+#include "AppDelegate.h"
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+USING_NS_CC;
+
+int WINAPI _tWinMain(HINSTANCE hInstance,
+                       HINSTANCE hPrevInstance,
+                       LPTSTR    lpCmdLine,
+                       int       nCmdShow)
 {
-public:
-    static cocos2d::Scene* createScene();
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
 
-    virtual bool init();
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
-
-	void doPushScene(Ref* pSender);
-	void doReplaceScene(Ref* pSender);
-
-	void doPushSceneTran(Ref* pSender);
-	void doReplaceSceneTran(Ref* pSender);
-	cocos2d::TransitionScene* createTransition(int nIdex, float t, cocos2d::Scene* s);
-
-	void doChangeScene(Ref* pSender);
-	void onEnter() override;
-	void onEnterTransitionDidFinish() override;
-	void onExitTransitionDidStart() override;
-	void onExit() override;
-	~HelloWorld(void);
-};
-
-#endif // __HELLOWORLD_SCENE_H__
+    // create the application instance
+    AppDelegate app;
+    return Application::getInstance()->run();
+}

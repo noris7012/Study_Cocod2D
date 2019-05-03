@@ -24,19 +24,14 @@
 
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include "TestScene2.h"
+#include "TestScene3.h"
 
 USING_NS_CC;
 
 Scene* HelloWorld::createScene()
 {
     return HelloWorld::create();
-}
-
-// Print useful error message instead of segfaulting when files are not there.
-static void problemLoading(const char* filename)
-{
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -49,85 +44,197 @@ bool HelloWorld::init()
         return false;
     }
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto wlayer = LayerColor::create(Color4B::WHITE);
+	this->addChild(wlayer);
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+	/* 장면 전환
+	auto item1 = MenuItemFont::create("pushScene", CC_CALLBACK_1(HelloWorld::doPushScene, this));
+	item1->setColor(Color3B::BLACK);
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+	auto item2 = MenuItemFont::create("replaceScene", CC_CALLBACK_1(HelloWorld::doReplaceScene, this));
+	item2->setColor(Color3B::BLACK);
+	*/
 
-    if (closeItem == nullptr ||
-        closeItem->getContentSize().width <= 0 ||
-        closeItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-        float y = origin.y + closeItem->getContentSize().height/2;
-        closeItem->setPosition(Vec2(x,y));
-    }
+	/* 장면 전환 애니메이션
+	auto item1 = MenuItemFont::create("pushScene transition", CC_CALLBACK_1(HelloWorld::doPushSceneTran, this));
+	item1->setColor(Color3B::BLACK);
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+	auto item2 = MenuItemFont::create("replaceScene transition", CC_CALLBACK_1(HelloWorld::doReplaceSceneTran, this));
+	item2->setColor(Color3B::BLACK);
+	*/
 
-    /////////////////////////////
-    // 3. add your codes below...
+	auto item1 = MenuItemFont::create("Scene1 -> Scene2", CC_CALLBACK_1(HelloWorld::doChangeScene, this));
+	item1->setColor(Color3B::BLACK);
 
-    // add a label shows "Hello World"
-    // create and initialize a label
+	// auto pMenu = Menu::create(item1, item2, nullptr);
+	auto pMenu = Menu::create(item1, nullptr);
+	pMenu->alignItemsVertically();
+	this->addChild(pMenu);
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
+	log("HelloWorld :: init");
 
-        // add the label as a child to this layer
-        this->addChild(label, 1);
-    }
-
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-    if (sprite == nullptr)
-    {
-        problemLoading("'HelloWorld.png'");
-    }
-    else
-    {
-        // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-        // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
-    }
     return true;
 }
 
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void HelloWorld::doPushScene(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+	auto pScene = TestScene2::createScene();
+	Director::getInstance()->pushScene(pScene);
+}
 
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
+void HelloWorld::doReplaceScene(Ref* pSender)
+{
+	auto pScene = TestScene3::createScene();
+	Director::getInstance()->replaceScene(pScene);
+}
 
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
+void HelloWorld::doPushSceneTran(Ref* pSender)
+{
+	static int nIndex1 = 0;
 
+	auto pScene = TestScene2::createScene();
+	Director::getInstance()->pushScene(createTransition(nIndex1, 1, pScene));
 
+	nIndex1++;
+	if (nIndex1 > 40)
+	{
+		nIndex1 = 0;
+	}
+}
+
+void HelloWorld::doReplaceSceneTran(Ref* pSender)
+{
+	static int nIndex2 = 2;
+
+	auto pScene = TestScene3::createScene();
+	Director::getInstance()->replaceScene(createTransition(nIndex2, 1, pScene));
+
+	nIndex2--;
+	if (nIndex2 < 0)
+	{
+		nIndex2 = 40;
+	}
+}
+
+TransitionScene* HelloWorld::createTransition(int nIndex, float t, Scene* s)
+{
+	Director::getInstance()->setDepthTest(false);
+
+	switch (nIndex)
+	{
+		// 점프하면서 Zoom
+	case 0: return TransitionJumpZoom::create(t, s);
+		// 시계방향으로 침이 돌면서 장면이 바뀜
+	case 1: return TransitionProgressRadialCCW::create(t, s);
+		// 시계 반대 방향으로 침이 돌면서 장면이 바뀜
+	case 2: return TransitionProgressRadialCW::create(t, s);
+	case 3: return TransitionProgressHorizontal::create(t, s);
+	case 4: return TransitionProgressVertical::create(t, s);
+	case 5: return TransitionProgressInOut::create(t, s);
+	case 6: return TransitionProgressOutIn::create(t, s);
+		// 교차
+	case 7: return TransitionCrossFade::create(t,s);
+		// 페이지 넘김형식
+	case 8: return TransitionPageTurn::create(t, s, false);
+	case 9: return TransitionPageTurn::create(t, s, true);
+		// 바둑판무늬 좌측하단부터 우측상단순으로 사라짐
+	case 10: return TransitionFadeTR::create(t, s);
+		// 바둑판무늬 우측상단부터 좌측하단순으로 사라짐
+	case 11: return TransitionFadeBL::create(t, s);
+		// 하단에서 상단으로 잘라냄
+	case 12: return TransitionFadeUp::create(t, s);
+		// 상단에서 하단으로 잘라냄
+	case 13: return TransitionFadeDown::create(t, s);
+		// 바둑판무늬 뿌리기
+	case 14: return TransitionTurnOffTiles::create(t, s);
+		// 가로로 세등분 나눔
+	case 15: return TransitionSplitRows::create(t, s);
+		// 세로로 세등분 나눔, 양끝의 두등분은 밑으로 나머지는 위로
+	case 16: return TransitionSplitCols::create(t, s);
+		// 페이드인아웃 : 검정 화면
+	case 17: return TransitionFade::create(t, s);
+		// 페이드인아웃 : 하얀 화면
+	case 18: return TransitionFade::create(t, s, Color3B::WHITE);
+		// X축(횡선)을 기준으로 회전
+	case 19: return TransitionFlipX::create(t, s, TransitionScene::Orientation::LEFT_OVER);
+	case 20: return TransitionFlipX::create(t, s, TransitionScene::Orientation::RIGHT_OVER);
+		// Y축 (종선)을 기준으로 회전
+	case 21: return TransitionFlipY::create(t, s, TransitionScene::Orientation::UP_OVER);
+	case 22: return TransitionFlipY::create(t, s, TransitionScene::Orientation::DOWN_OVER);
+		// 뒤집어지면서 다음장면으로 넘어감
+	case 23: return TransitionFlipAngular::create(t, s, TransitionScene::Orientation::LEFT_OVER);
+	case 24: return TransitionFlipAngular::create(t, s, TransitionScene::Orientation::RIGHT_OVER);
+		// X축(횡선)을 기준으로 회전 (확대)
+	case 25: return TransitionZoomFlipX::create(t, s, TransitionScene::Orientation::LEFT_OVER);
+	case 26: return TransitionZoomFlipX::create(t, s, TransitionScene::Orientation::RIGHT_OVER);
+		// Y축(종선)을 기준으로 회전 (확대)
+	case 27: return TransitionZoomFlipY::create(t, s, TransitionScene::Orientation::UP_OVER);
+	case 28: return TransitionZoomFlipY::create(t, s, TransitionScene::Orientation::DOWN_OVER);
+		// 뒤집어지면서 다음장면으로 넘어감 (확대)
+	case 29: return TransitionZoomFlipAngular::create(t, s, TransitionScene::Orientation::LEFT_OVER);
+	case 30: return TransitionZoomFlipAngular::create(t, s, TransitionScene::Orientation::RIGHT_OVER);
+		// 이전장면 수축 다음장면 확대
+	case 31: return TransitionShrinkGrow::create(t, s);
+		// 회전하면서 Zoom
+	case 32: return TransitionRotoZoom::create(t, s);
+		// 왼쪽에서 다음장면이 나타나서 이전장면을 덮어씀
+	case 33: return TransitionMoveInL::create(t, s);
+		// 오른쪽에서 다음장면이 나타남
+	case 34: return TransitionMoveInR::create(t, s);
+		// 위쪽에서 다음장면이 나타남
+	case 35: return TransitionMoveInT::create(t, s);
+		// 아래쪽에서 다음장면이 나타남
+	case 36: return TransitionMoveInB::create(t, s);
+		// 왼쪽에서 다음장면이 나타나서 이전장면을 밀어냄
+	case 37: return TransitionSlideInL::create(t, s);
+		// 오른쪽에서 다음장면이 나타나서 이전장면을 밀어냄
+	case 38: return TransitionSlideInR::create(t, s);
+		// 위쪽에서 다음장면이 나타나서 이전장면을 밀어냄
+	case 39: return TransitionSlideInT::create(t, s);
+		// 아래쪽에서 다음장면이 나타나서 이전장면을 밀어냄
+	case 40: return TransitionSlideInB::create(t, s);
+	default: break;
+	}
+
+	return nullptr;
+}
+
+void HelloWorld::doChangeScene(Ref* pSender)
+{
+	auto pScene = TestScene2::createScene();
+	Director::getInstance()->replaceScene(TransitionProgressRadialCCW::create(1, pScene));
+}
+
+void HelloWorld::onEnter()
+{
+	Scene::onEnter();
+
+	log("HelloWorld :: onEnter");
+}
+
+void HelloWorld::onEnterTransitionDidFinish()
+{
+	Scene::onEnterTransitionDidFinish();
+
+	log("HelloWorld :: onEnterTransitionDidFinish");
+}
+
+void HelloWorld::onExitTransitionDidStart()
+{
+	Scene::onExitTransitionDidStart();
+
+	log("HelloWorld :: onExitTransitionDidStart");
+}
+
+void HelloWorld::onExit()
+{
+	Scene::onExit();
+
+	log("HelloWorld :: onExit");
+}
+
+HelloWorld::~HelloWorld()
+{
+	log("HelloWorld :: dealloc");
 }

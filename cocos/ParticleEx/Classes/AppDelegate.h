@@ -22,34 +22,43 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef  _APP_DELEGATE_H_
+#define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+/**
+@brief    The cocos2d Application.
+
+Private inheritance here hides part of interface from Director.
+*/
+class  AppDelegate : private cocos2d::Application
 {
 public:
-    static cocos2d::Scene* createScene();
+    AppDelegate();
+    virtual ~AppDelegate();
 
-    virtual bool init();
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(HelloWorld);
+    virtual void initGLContextAttrs();
 
-	void doPushScene(Ref* pSender);
-	void doReplaceScene(Ref* pSender);
+    /**
+    @brief    Implement Director and Scene init code here.
+    @return true    Initialize success, app continue.
+    @return false   Initialize failed, app terminate.
+    */
+    virtual bool applicationDidFinishLaunching();
 
-	void doPushSceneTran(Ref* pSender);
-	void doReplaceSceneTran(Ref* pSender);
-	cocos2d::TransitionScene* createTransition(int nIdex, float t, cocos2d::Scene* s);
+    /**
+    @brief  Called when the application moves to the background
+    @param  the pointer of the application
+    */
+    virtual void applicationDidEnterBackground();
 
-	void doChangeScene(Ref* pSender);
-	void onEnter() override;
-	void onEnterTransitionDidFinish() override;
-	void onExitTransitionDidStart() override;
-	void onExit() override;
-	~HelloWorld(void);
+    /**
+    @brief  Called when the application reenters the foreground
+    @param  the pointer of the application
+    */
+    virtual void applicationWillEnterForeground();
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // _APP_DELEGATE_H_
+
